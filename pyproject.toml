@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "qq-chat-history"
+version = "0.1.0"
+description = "A tool to extract QQ chat history."
+authors = ["kifuan <kifuan@foxmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "qq_chat_history"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.2.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
