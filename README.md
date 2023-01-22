@@ -7,7 +7,7 @@
 
 ## 安装
 
-使用 `pip` 安装。
+使用 `pip` 安装，要求 `Python 3.9` 或以上版本。
 
 ```bash
 > pip install -U qq-chat-history
