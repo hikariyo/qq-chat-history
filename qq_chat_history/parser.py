@@ -11,14 +11,6 @@ BRACKETS_REGEX = re.compile(r'[(](.*?)[)]')
 DATE_HEAD_REGEX = re.compile(r'^(\d{4}-\d{2}-\d{2}\s+\d\d?:\d{2}:\d{2}\s*)')
 
 
-@dataclass
-class Message:
-    date: str
-    id: str
-    name: str
-    content: str
-
-
 class Parser(abc.ABC):
     @abc.abstractmethod
     def extract_id(self, line: str) -> str:
@@ -28,7 +20,7 @@ class Parser(abc.ABC):
     def get_display_name(self, extracted_id: str) -> str:
         raise NotImplementedError()
 
-    def parse(self, lines: Iterable[str]) -> Generator[Message, None, None]:
+    def parse(self, lines: Iterable[str]) -> Generator[dict[str, str], None, None]:
         extracted_id = ''
         content_lines = collections.deque()
 
@@ -41,10 +33,12 @@ class Parser(abc.ABC):
             if date := DATE_HEAD_REGEX.search(line):
                 # Skips the first line only.
                 if extracted_id:
-                    date = date.group().strip()
-                    content = '\n'.join(get_and_pop_lines())
-                    name = self.get_display_name(extracted_id)
-                    yield Message(date, extracted_id, name, content)
+                    yield {
+                        'date': date.group().strip(),
+                        'id': extracted_id,
+                        'name': self.get_display_name(extracted_id),
+                        'content': '\n'.join(get_and_pop_lines()),
+                    }
                 extracted_id = self.extract_id(line)
             elif line:
                 # Skip blank lines.
