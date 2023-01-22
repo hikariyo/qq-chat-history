@@ -94,7 +94,7 @@ class ParserMeta(abc.ABCMeta):
 class GroupParser(Parser, metaclass=ParserMeta):
     __parser_name__ = 'group'
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self._names: dict[str, str] = {}
 

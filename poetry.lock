@@ -138,6 +138,18 @@ files = [
 ]
 
 [[package]]
+name = "types-ujson"
+version = "5.7.0.0"
+description = "Typing stubs for ujson"
+category = "dev"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-ujson-5.7.0.0.tar.gz", hash = "sha256:d7c001f668a2e1ac2decbafd2c42cc0bf58798a5cc3b5a3ee397b7ee37775919"},
+    {file = "types_ujson-5.7.0.0-py3-none-any.whl", hash = "sha256:ad48848c3da10e8023e9e75b1833282c28568ea680938c271e34d4d1426be816"},
+]
+
+[[package]]
 name = "ujson"
 version = "5.7.0"
 description = "Ultra fast JSON encoder and decoder for Python"
@@ -214,5 +226,5 @@ files = [
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.10"
-content-hash = "e40b832de6127ee0b08922dc40a9f839e65af29ba17a6ce751c0acd602059815"
+python-versions = "^3.9"
+content-hash = "a980542963f60f471cdc3b1401dde6e2f2b85dd363556b4a3ee1e66ad1f00175"
