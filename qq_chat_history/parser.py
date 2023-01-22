@@ -4,6 +4,8 @@ import collections
 from itertools import dropwhile
 from typing import Type, Iterable, Generator, cast
 
+from .message import Message
+
 
 ANGLE_BRACKETS_REGEX = re.compile(r'<(.*?)>')
 BRACKETS_REGEX = re.compile(r'[(](.*?)[)]')
@@ -19,12 +21,12 @@ class Parser(abc.ABC):
     def _get_display_name(self, extracted_id: str) -> str:
         raise NotImplementedError()
 
-    def parse(self, lines: Iterable[str]) -> Generator[dict[str, str], None, None]:
+    def parse(self, lines: Iterable[str]) -> Generator[Message, None, None]:
         """
         Parses given lines.
         The id and name will always be the same for private parsers.
         :param lines: the lines from QQ chat history file.
-        :return: a generator to generate messages in dict with date, id, name and content.
+        :return: a generator of messages.
         """
 
         date = ''
@@ -41,12 +43,11 @@ class Parser(abc.ABC):
             if not extracted_id:
                 return
 
-            yield {
-                'date': date,
-                'id': extracted_id,
-                'name': self._get_display_name(extracted_id),
-                'content': '\n'.join(get_and_pop_lines())
-            }
+            yield Message(
+                date=date, id=extracted_id,
+                content='\n'.join(get_and_pop_lines()),
+                name=self._get_display_name(extracted_id),
+            )
 
         for line in dropwhile(lambda l: not DATE_HEAD_REGEX.search(l), lines):
             if d := DATE_HEAD_REGEX.search(line):
