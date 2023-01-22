@@ -43,6 +43,10 @@ class Parser(abc.ABC):
                 # Skip blank lines.
                 content_lines.append(line)
 
+    @staticmethod
+    def get_instance(name: str) -> 'Parser':
+        return ParserMeta.get_instance(name)
+
 
 class ParserMeta(abc.ABCMeta):
     parsers: dict[str, Type[Parser]] = {}

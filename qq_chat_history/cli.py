@@ -2,7 +2,7 @@ import click
 import ujson
 from pathlib import Path
 
-from . import ParserMeta
+from . import Parser
 
 
 @click.command()
@@ -14,7 +14,7 @@ from . import ParserMeta
               type=click.Path(dir_okay=False, path_type=Path),
               default='output.json', prompt_required=False)
 def run(input_file: Path, output_file: Path, file_type: str, indent: int):
-    parser = ParserMeta.get_instance(file_type)
+    parser = Parser.get_instance(file_type)
     lines = input_file.read_text('utf8').splitlines()
     parsed_lines = list(parser.parse(lines))
     with output_file.open('w', encoding='utf8') as f:
