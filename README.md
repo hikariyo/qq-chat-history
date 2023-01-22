@@ -46,8 +46,8 @@ TCG
 塔菲怎么你了
 '''.strip().splitlines()
 
-for line in parser.parse(lines):
-    print(line)  # {'date': ..., 'id': ..., 'name': ..., 'content': ...}
+for msg in parser.parse(lines):
+    print(msg.date, msg.id, msg.name, msg.content)
 ```
 
 注意 `parser.parse` 方法返回的是一个生成器。

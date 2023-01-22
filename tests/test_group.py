@@ -22,7 +22,7 @@ TCG
 塔菲怎么你了
 '''.strip().splitlines()
 
-expected_lines = [
+expected_messages = [
     Message(date='1883-03-07 11:22:33', id='someone@example.com', name='A', content='关注永雏塔菲喵\n关注永雏塔菲谢谢喵'),
     Message(date='1883-03-07 12:34:56', id='123123', name='B', content='TCG'),
     Message(date='1883-03-07 13:24:36', id='456456', name='C', content='TCG'),
@@ -32,6 +32,5 @@ expected_lines = [
 
 def test_group():
     parser = Parser.get_instance('group')
-    parsed_lines = list(parser.parse(lines))
-    assert parsed_lines == expected_lines
-
+    messages = list(parser.parse(lines))
+    assert messages == expected_messages
