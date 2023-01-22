@@ -1,4 +1,4 @@
-# qq-chat-history
+# QQ 聊天记录提取器
 
 ## 简介
 
