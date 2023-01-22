@@ -1,6 +1,6 @@
 import re
 import abc
-import collections
+from collections import deque
 from itertools import dropwhile
 from typing import Type, Iterable, Generator, cast
 
@@ -14,7 +14,7 @@ DATE_HEAD_REGEX = re.compile(r'^(\d{4}-\d{2}-\d{2}\s+\d\d?:\d{2}:\d{2}\s*)')
 
 class Parser(abc.ABC):
     """
-    The parser to parse lines from chat history file exported from QQ.
+    The parser to parse lines from a chat history file exported from QQ.
     >>> parser = Parser.get_instance('group')  # or private
     >>> for line in parser.parse(...):
     >>>     ...
@@ -30,7 +30,7 @@ class Parser(abc.ABC):
 
     def parse(self, lines: Iterable[str]) -> Generator[Message, None, None]:
         """
-        Parses given lines.
+        Parses given lines and returns a generator of messages.
         The id and name will always be the same for private parsers.
         :param lines: the lines from QQ chat history file.
         :return: a generator of messages.
@@ -40,7 +40,7 @@ class Parser(abc.ABC):
         extracted_id = ''
 
         # I don't know why mypy needs this annotation.
-        content_lines: collections.deque = collections.deque()
+        content_lines: deque = deque()
 
         # Pops the elements while iterating the deque.
         def get_and_pop_lines():
