@@ -12,11 +12,11 @@ DATE_HEAD_REGEX = re.compile(r'^(\d{4}-\d{2}-\d{2}\s+\d\d?:\d{2}:\d{2}\s*)')
 
 class Parser(abc.ABC):
     @abc.abstractmethod
-    def extract_id(self, line: str) -> str:
+    def _extract_id(self, line: str) -> str:
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def get_display_name(self, extracted_id: str) -> str:
+    def _get_display_name(self, extracted_id: str) -> str:
         raise NotImplementedError()
 
     def parse(self, lines: Iterable[str]) -> Generator[dict[str, str], None, None]:
@@ -35,10 +35,10 @@ class Parser(abc.ABC):
                     yield {
                         'date': date.group().strip(),
                         'id': extracted_id,
-                        'name': self.get_display_name(extracted_id),
+                        'name': self._get_display_name(extracted_id),
                         'content': '\n'.join(get_and_pop_lines()),
                     }
-                extracted_id = self.extract_id(line)
+                extracted_id = self._extract_id(line)
             elif line:
                 # Skip blank lines.
                 content_lines.append(line)
@@ -69,7 +69,7 @@ class GroupParser(Parser, metaclass=ParserMeta):
         super().__init__()
         self._names: dict[str, str] = {}
 
-    def extract_id(self, line: str) -> str:
+    def _extract_id(self, line: str) -> str:
         for brackets in (BRACKETS_REGEX, ANGLE_BRACKETS_REGEX):
             if groups := brackets.findall(line):
                 id_ = groups[-1]
@@ -78,15 +78,15 @@ class GroupParser(Parser, metaclass=ParserMeta):
 
         raise LookupError(f'cannot find id in line {line}')
 
-    def get_display_name(self, extracted_id: str) -> str:
+    def _get_display_name(self, extracted_id: str) -> str:
         return self._names[extracted_id]
 
 
 class PrivateParser(Parser, metaclass=ParserMeta):
     __parser_name__ = 'private'
 
-    def extract_id(self, line: str) -> str:
+    def _extract_id(self, line: str) -> str:
         return DATE_HEAD_REGEX.sub('', line)
 
-    def get_display_name(self, extracted_id: str) -> str:
+    def _get_display_name(self, extracted_id: str) -> str:
         return extracted_id
