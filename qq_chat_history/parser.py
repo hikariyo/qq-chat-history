@@ -38,7 +38,9 @@ class Parser(abc.ABC):
 
         date = ''
         extracted_id = ''
-        content_lines = collections.deque()
+
+        # I don't know why mypy needs this annotation.
+        content_lines: collections.deque = collections.deque()
 
         # Pops the elements while iterating the deque.
         def get_and_pop_lines():
@@ -56,7 +58,7 @@ class Parser(abc.ABC):
                 name=self._get_display_name(extracted_id),
             )
 
-        for line in dropwhile(lambda l: not DATE_HEAD_REGEX.search(l), lines):
+        for line in dropwhile(lambda li: not DATE_HEAD_REGEX.search(li), lines):
             if d := DATE_HEAD_REGEX.search(line):
                 yield from generate()
                 extracted_id = self._extract_id(line)
