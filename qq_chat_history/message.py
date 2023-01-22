@@ -4,7 +4,7 @@ from dataclasses import dataclass
 @dataclass()
 class Message:
     """
-    Represents messages in the export-file.
+    Represents messages in the file exported from QQ.
     """
 
     date: str

@@ -13,6 +13,13 @@ DATE_HEAD_REGEX = re.compile(r'^(\d{4}-\d{2}-\d{2}\s+\d\d?:\d{2}:\d{2}\s*)')
 
 
 class Parser(abc.ABC):
+    """
+    The parser to parse lines from chat history file exported from QQ.
+    >>> parser = Parser.get_instance('group')  # or private
+    >>> for line in parser.parse(...):
+    >>>     ...
+    """
+
     @abc.abstractmethod
     def _extract_id(self, line: str) -> str:
         raise NotImplementedError()
@@ -64,7 +71,7 @@ class Parser(abc.ABC):
     @staticmethod
     def get_instance(name: str) -> 'Parser':
         """
-        Gets the parser by its name.
+        Gets a parser by name, either "private" or "group".
         It is not cached because parsers may contain certain data after parsing.
         :param name: the name of the parser, private or group.
         :return: the parser.
