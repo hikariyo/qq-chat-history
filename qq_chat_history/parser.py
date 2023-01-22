@@ -2,7 +2,6 @@ import re
 import abc
 import collections
 from itertools import dropwhile
-from dataclasses import dataclass
 from typing import Type, Iterable, Generator, cast
 
 
