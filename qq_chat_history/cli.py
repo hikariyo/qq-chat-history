@@ -15,6 +15,6 @@ from . import Parser
 def run(input_file: Path, output_file: Path, file_type: str, indent: int):
     parser = Parser.get_instance(file_type)
     lines = input_file.read_text('utf8').splitlines()
-    parsed_lines = list(parser.parse(lines))
+    messages = [msg.__dict__ for msg in parser.parse(lines)]
     with output_file.open('w', encoding='utf8') as f:
-        ujson.dump(parsed_lines, f, ensure_ascii=False, indent=indent)
+        ujson.dump(messages, f, ensure_ascii=False, indent=indent)
