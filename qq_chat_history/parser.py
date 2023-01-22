@@ -59,24 +59,24 @@ class Parser(abc.ABC):
         :return: the parser.
         """
 
-        return ParserMeta.get_instance(name)
+        return ParserMeta.get_parser_type(name)()
 
 
 class ParserMeta(abc.ABCMeta):
-    parsers: dict[str, Type[Parser]] = {}
+    _parsers: dict[str, Type[Parser]] = {}
 
     def __new__(mcs, name, bases, attrs) -> Type[Parser]:
         assert Parser in bases
         assert '__parser_name__' in attrs
 
         t = cast(Type[Parser], super().__new__(mcs, name, bases, attrs))
-        mcs.parsers[attrs['__parser_name__']] = t
+        mcs._parsers[attrs['__parser_name__']] = t
         return t
 
     @classmethod
-    def get_instance(mcs, name: str) -> Parser:
-        if parser := mcs.parsers.get(name):
-            return parser()
+    def get_parser_type(mcs, name: str) -> Type[Parser]:
+        if parser := mcs._parsers.get(name):
+            return parser
         raise NameError(f'unknown parser name: {name}')
 
 
