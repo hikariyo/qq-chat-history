@@ -27,6 +27,7 @@ class Parser(abc.ABC):
         :return: a generator to generate messages in dict with date, id, name and content.
         """
 
+        date = ''
         extracted_id = ''
         content_lines = collections.deque()
 
@@ -35,20 +36,27 @@ class Parser(abc.ABC):
             while content_lines:
                 yield content_lines.popleft()
 
+        def generate():
+            return {
+                'date': date,
+                'id': extracted_id,
+                'name': self._get_display_name(extracted_id),
+                'content': '\n'.join(get_and_pop_lines())
+            }
+
         for line in dropwhile(lambda l: not DATE_HEAD_REGEX.search(l), lines):
-            if date := DATE_HEAD_REGEX.search(line):
+            if d := DATE_HEAD_REGEX.search(line):
                 # Skips the first line only.
                 if extracted_id:
-                    yield {
-                        'date': date.group().strip(),
-                        'id': extracted_id,
-                        'name': self._get_display_name(extracted_id),
-                        'content': '\n'.join(get_and_pop_lines()),
-                    }
+                    yield generate()
                 extracted_id = self._extract_id(line)
+                date = d.group().strip()
+
             elif line:
                 # Skip blank lines.
                 content_lines.append(line)
+
+        yield generate()
 
     @staticmethod
     def get_instance(name: str) -> 'Parser':
