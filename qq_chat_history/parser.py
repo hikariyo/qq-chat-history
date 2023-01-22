@@ -36,8 +36,12 @@ class Parser(abc.ABC):
             while content_lines:
                 yield content_lines.popleft()
 
+        # Generates only when extracted_id is not an empty string.
         def generate():
-            return {
+            if not extracted_id:
+                return
+
+            yield {
                 'date': date,
                 'id': extracted_id,
                 'name': self._get_display_name(extracted_id),
@@ -46,9 +50,7 @@ class Parser(abc.ABC):
 
         for line in dropwhile(lambda l: not DATE_HEAD_REGEX.search(l), lines):
             if d := DATE_HEAD_REGEX.search(line):
-                # Skips the first line only.
-                if extracted_id:
-                    yield generate()
+                yield from generate()
                 extracted_id = self._extract_id(line)
                 date = d.group().strip()
 
@@ -56,7 +58,7 @@ class Parser(abc.ABC):
                 # Skip blank lines.
                 content_lines.append(line)
 
-        yield generate()
+        yield from generate()
 
     @staticmethod
     def get_instance(name: str) -> 'Parser':
