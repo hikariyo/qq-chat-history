@@ -1,11 +1,12 @@
 [tool.poetry]
 name = "qq-chat-history"
-version = "0.1.0"
+version = "0.1.1"
 description = "A tool to extract QQ chat history."
 authors = ["kifuan <kifuan@foxmail.com>"]
 license = "MIT"
 readme = "README.md"
 packages = [{include = "qq_chat_history"}]
+repository = "https://github.com/kifuan/qq-chat-history"
 
 [tool.poetry.dependencies]
 python = "^3.10"
