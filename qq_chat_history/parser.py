@@ -20,6 +20,13 @@ class Parser(abc.ABC):
         raise NotImplementedError()
 
     def parse(self, lines: Iterable[str]) -> Generator[dict[str, str], None, None]:
+        """
+        Parses given lines.
+        The id and name will always be the same for private parsers.
+        :param lines: the lines from QQ chat history file.
+        :return: a generator to generate messages in dict with date, id, name and content.
+        """
+
         extracted_id = ''
         content_lines = collections.deque()
 
@@ -45,6 +52,13 @@ class Parser(abc.ABC):
 
     @staticmethod
     def get_instance(name: str) -> 'Parser':
+        """
+        Gets the parser by its name.
+        It is not cached because parsers may contain certain data after parsing.
+        :param name: the name of the parser, private or group.
+        :return: the parser.
+        """
+
         return ParserMeta.get_instance(name)
 
 
