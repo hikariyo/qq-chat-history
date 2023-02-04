@@ -2,9 +2,9 @@ from qq_chat_history import Parser, Message
 
 
 lines = '''
-===
+=========
 假装我是 QQ 自动生成的文件头
-===
+=========
 
 
 1883-03-07 11:22:33 A
@@ -25,7 +25,7 @@ expected_messages = [
 ]
 
 
-def test_private():
+def test_private() -> None:
     parser = Parser.get_instance('private')
     messages = list(parser.parse(lines))
     assert messages == expected_messages
