@@ -32,6 +32,10 @@ from qq_chat_history import Parser
 parser = Parser.get_instance('group')
 
 lines = '''
+=========
+假装我是 QQ 自动生成的文件头
+=========
+
 1883-03-07 11:22:33 A<someone@example.com>
 关注永雏塔菲喵
 关注永雏塔菲谢谢喵
