@@ -2,7 +2,7 @@ import re
 import abc
 from collections import deque
 from itertools import dropwhile
-from typing import Type, Iterable, Generator, cast
+from typing import Any, Type, Iterable, Iterator, cast
 
 from .message import Message
 
@@ -28,7 +28,7 @@ class Parser(abc.ABC):
     def _get_display_name(self, extracted_id: str) -> str:
         raise NotImplementedError()
 
-    def parse(self, lines: Iterable[str]) -> Generator[Message, None, None]:
+    def parse(self, lines: Iterable[str]) -> Iterator[Message]:
         """
         Parses given lines and returns a generator of messages.
         The id and name will always be the same for private parsers.
@@ -39,16 +39,15 @@ class Parser(abc.ABC):
         date = ''
         extracted_id = ''
 
-        # I don't know why mypy needs this annotation.
-        content_lines: deque = deque()
+        content_lines: deque[str] = deque()
 
         # Pops the elements while iterating the deque.
-        def get_and_pop_lines():
+        def get_and_pop_lines() -> Iterator[str]:
             while content_lines:
                 yield content_lines.popleft()
 
         # Generates only when extracted_id is not an empty string.
-        def generate():
+        def generate_one() -> Iterator[Message]:
             if not extracted_id:
                 return
 
@@ -60,7 +59,7 @@ class Parser(abc.ABC):
 
         for line in dropwhile(lambda li: not DATE_HEAD_REGEX.search(li), lines):
             if d := DATE_HEAD_REGEX.search(line):
-                yield from generate()
+                yield from generate_one()
                 extracted_id = self._extract_id(line)
                 date = d.group().strip()
 
@@ -68,7 +67,7 @@ class Parser(abc.ABC):
                 # Skip blank lines.
                 content_lines.append(line)
 
-        yield from generate()
+        yield from generate_one()
 
     @staticmethod
     def get_instance(name: str) -> 'Parser':
@@ -85,7 +84,7 @@ class Parser(abc.ABC):
 class ParserMeta(abc.ABCMeta):
     _parsers: dict[str, Type[Parser]] = {}
 
-    def __new__(mcs, name, bases, attrs) -> Type[Parser]:
+    def __new__(mcs, name: str, bases: tuple[type, ...], attrs: dict[str, Any]) -> Type[Parser]:
         assert Parser in bases
         assert '__parser_name__' in attrs
 
@@ -110,9 +109,9 @@ class GroupParser(Parser, metaclass=ParserMeta):
     def _extract_id(self, line: str) -> str:
         for brackets in (BRACKETS_REGEX, ANGLE_BRACKETS_REGEX):
             if groups := brackets.findall(line):
-                id_ = groups[-1]
-                self._names[id_] = DATE_HEAD_REGEX.sub('', line[:-len(id_) - 2]).strip()
-                return id_
+                extracted_id = cast(str, groups[-1])
+                self._names[extracted_id] = DATE_HEAD_REGEX.sub('', line[:-len(extracted_id) - 2]).strip()
+                return extracted_id
 
         raise LookupError(f'cannot find id in line {line}')
 

@@ -30,7 +30,7 @@ expected_messages = [
 ]
 
 
-def test_group():
+def test_group() -> None:
     parser = Parser.get_instance('group')
     messages = list(parser.parse(lines))
     assert messages == expected_messages

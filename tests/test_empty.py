@@ -14,7 +14,7 @@ lines = '''
 '''.strip().splitlines()
 
 
-def test_empty():
+def test_empty() -> None:
     parser_group = Parser.get_instance('group')
     parser_private = Parser.get_instance('private')
 
