@@ -2,7 +2,7 @@ import re
 import abc
 from collections import deque
 from itertools import dropwhile
-from typing import Any, Type, Iterable, Iterator, cast
+from typing import Type, Iterable, Iterator, Callable, cast
 
 from .message import Message
 
@@ -81,30 +81,23 @@ class Parser(abc.ABC):
         :return: the parser.
         """
 
-        return ParserMeta.get_parser_type(name)()
-
-
-class ParserMeta(abc.ABCMeta):
-    _parsers: dict[str, Type[Parser]] = {}
-
-    def __new__(mcs, name: str, bases: tuple[type, ...], attrs: dict[str, Any]) -> Type[Parser]:
-        assert Parser in bases
-        assert '__parser_name__' in attrs
-
-        t = cast(Type[Parser], super().__new__(mcs, name, bases, attrs))
-        mcs._parsers[attrs['__parser_name__']] = t
-        return t
-
-    @classmethod
-    def get_parser_type(mcs, name: str) -> Type[Parser]:
-        if parser := mcs._parsers.get(name):
-            return parser
+        if parser := parser_types.get(name):
+            return parser()
         raise NameError(f'unknown parser name: {name}')
 
 
-class GroupParser(Parser, metaclass=ParserMeta):
-    __parser_name__ = 'group'
+parser_types: dict[str, Type[Parser]] = {}
 
+
+def register_parser(name: str) -> Callable[[Type[Parser]], Type[Parser]]:
+    def inner(parser: Type[Parser]) -> Type[Parser]:
+        parser_types[name] = parser
+        return parser
+    return inner
+
+
+@register_parser('group')
+class GroupParser(Parser):
     def __init__(self) -> None:
         super().__init__()
         self._names: dict[str, str] = {}
@@ -122,9 +115,8 @@ class GroupParser(Parser, metaclass=ParserMeta):
         return self._names[extracted_id]
 
 
-class PrivateParser(Parser, metaclass=ParserMeta):
-    __parser_name__ = 'private'
-
+@register_parser('private')
+class PrivateParser(Parser):
     def _extract_id(self, line: str) -> str:
         return DATE_HEAD_REGEX.sub('', line)
 
