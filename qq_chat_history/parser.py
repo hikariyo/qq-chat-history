@@ -7,8 +7,8 @@ from typing import Any, Type, Iterable, Iterator, cast
 from .message import Message
 
 
-ANGLE_BRACKETS_REGEX = re.compile(r'<(.*?)>')
-BRACKETS_REGEX = re.compile(r'[(](.*?)[)]')
+ANGLE_BRACKETS_REGEX = re.compile(r'<([^<>]*?)>$')
+BRACKETS_REGEX = re.compile(r'[(]([^()]*?)[)]$')
 DATE_HEAD_REGEX = re.compile(r'^(\d{4}-\d{2}-\d{2}\s+\d\d?:\d{2}:\d{2}\s*)')
 
 
@@ -57,15 +57,18 @@ class Parser(abc.ABC):
                 name=self._get_display_name(extracted_id),
             )
 
+        # Search for the date only after a blank line.
+        encountered_blank = True
         for line in dropwhile(lambda li: not DATE_HEAD_REGEX.search(li), lines):
-            if d := DATE_HEAD_REGEX.search(line):
+            if encountered_blank and (d := DATE_HEAD_REGEX.search(line)):
                 yield from generate_one()
                 extracted_id = self._extract_id(line)
                 date = d.group().strip()
-
+                encountered_blank = False
             elif line:
-                # Skip blank lines.
                 content_lines.append(line)
+            else:
+                encountered_blank = True
 
         yield from generate_one()
 
