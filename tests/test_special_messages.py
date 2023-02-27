@@ -1,4 +1,4 @@
-from qq_chat_history import Parser, Message
+from qq_chat_history import parse, Message
 
 
 date_lines = '''
@@ -50,12 +50,10 @@ name_expected_messages = [
 
 
 def test_pure_date_message() -> None:
-    parser = Parser.get_instance('private')
-    messages = list(parser.parse(date_lines))
+    messages = list(parse(date_lines))
     assert messages == date_expected_messages
 
 
 def test_name_with_brackets() -> None:
-    parser = Parser.get_instance('group')
-    messages = list(parser.parse(name_lines))
+    messages = list(parse(name_lines))
     assert messages == name_expected_messages

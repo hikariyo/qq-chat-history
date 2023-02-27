@@ -1,4 +1,4 @@
-from qq_chat_history import Parser, Message
+from qq_chat_history import parse, Message
 
 
 lines = '''
@@ -31,6 +31,5 @@ expected_messages = [
 
 
 def test_group() -> None:
-    parser = Parser.get_instance('group')
-    messages = list(parser.parse(lines))
+    messages = list(parse(lines))
     assert messages == expected_messages

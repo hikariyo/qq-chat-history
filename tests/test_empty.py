@@ -1,4 +1,4 @@
-from qq_chat_history import Parser
+from qq_chat_history import parse
 
 
 lines = '''
@@ -15,8 +15,5 @@ lines = '''
 
 
 def test_empty() -> None:
-    parser_group = Parser.get_instance('group')
-    parser_private = Parser.get_instance('private')
-
-    assert not list(parser_group.parse(lines))
-    assert not list(parser_private.parse(lines))
+    assert not list(parse(lines))
+    assert not list(parse(lines))
