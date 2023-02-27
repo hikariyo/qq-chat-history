@@ -1,15 +1,18 @@
 import re
 import abc
-from collections import deque
+from collections import deque, namedtuple
 from itertools import dropwhile
-from typing import Type, Iterable, Iterator, Callable, cast
+from typing import Type, Iterable, Iterator, Callable, Optional, cast
 
 from .message import Message
 
 
 ANGLE_BRACKETS_REGEX = re.compile(r'<([^<>]*?)>$')
 BRACKETS_REGEX = re.compile(r'[(]([^()]*?)[)]$')
-DATE_HEAD_REGEX = re.compile(r'^(\d{4}-\d{2}-\d{2}\s+\d\d?:\d{2}:\d{2}\s*)')
+DATE_HEAD_REGEX = re.compile(r'^(\d{4}-\d{2}-\d{2}\s+\d\d?:\d{2}:\d{2})\s+')
+
+
+MessageHead = namedtuple('MessageType', ('date', 'id'))
 
 
 class Parser(abc.ABC):
@@ -21,7 +24,7 @@ class Parser(abc.ABC):
     """
 
     @abc.abstractmethod
-    def _extract_id(self, line: str) -> str:
+    def _parse_message_head(self, line: str) -> Optional[MessageHead]:
         raise NotImplementedError()
 
     @abc.abstractmethod
@@ -47,7 +50,7 @@ class Parser(abc.ABC):
                 yield content_lines.popleft()
 
         # Generates only when extracted_id is not an empty string.
-        def generate_one() -> Iterator[Message]:
+        def generate_prev() -> Iterator[Message]:
             if not extracted_id:
                 return
 
@@ -57,20 +60,14 @@ class Parser(abc.ABC):
                 name=self._get_display_name(extracted_id),
             )
 
-        # Search for the date only after a blank line.
-        encountered_blank = True
-        for line in dropwhile(lambda li: not DATE_HEAD_REGEX.search(li), lines):
-            if encountered_blank and (d := DATE_HEAD_REGEX.search(line)):
-                yield from generate_one()
-                extracted_id = self._extract_id(line)
-                date = d.group().strip()
-                encountered_blank = False
+        for line in dropwhile(lambda li: self._parse_message_head(li) is None, lines):
+            if message_head := self._parse_message_head(line):
+                yield from generate_prev()
+                date, extracted_id = message_head
             elif line:
                 content_lines.append(line)
-            else:
-                encountered_blank = True
 
-        yield from generate_one()
+        yield from generate_prev()
 
     @staticmethod
     def get_instance(name: str) -> 'Parser':
@@ -102,14 +99,17 @@ class GroupParser(Parser):
         super().__init__()
         self._names: dict[str, str] = {}
 
-    def _extract_id(self, line: str) -> str:
+    def _parse_message_head(self, line: str) -> Optional[MessageHead]:
+        if not (date := DATE_HEAD_REGEX.search(line)):
+            return None
+
         for brackets in (BRACKETS_REGEX, ANGLE_BRACKETS_REGEX):
             if groups := brackets.findall(line):
                 extracted_id = cast(str, groups[-1])
                 self._names[extracted_id] = DATE_HEAD_REGEX.sub('', line[:-len(extracted_id) - 2]).strip()
-                return extracted_id
+                return date.group().strip(), extracted_id
 
-        raise LookupError(f'cannot find id in line {line}')
+        return None
 
     def _get_display_name(self, extracted_id: str) -> str:
         return self._names[extracted_id]
@@ -117,8 +117,12 @@ class GroupParser(Parser):
 
 @register_parser('private')
 class PrivateParser(Parser):
-    def _extract_id(self, line: str) -> str:
-        return DATE_HEAD_REGEX.sub('', line)
+    def _parse_message_head(self, line: str) -> Optional[MessageHead]:
+        if not (date := DATE_HEAD_REGEX.search(line)):
+            return None
+        if not (extracted_id := DATE_HEAD_REGEX.sub('', line)):
+            return None
+        return date.group().strip(), extracted_id
 
     def _get_display_name(self, extracted_id: str) -> str:
         return extracted_id
