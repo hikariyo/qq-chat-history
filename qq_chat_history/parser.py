@@ -8,7 +8,7 @@ from .message import Message
 
 
 @dataclass()
-class PartialMessage:
+class MessageBuilder:
     """
     Internal message without content, used when building messages.
     """
@@ -25,7 +25,7 @@ BRACKETS_REGEX = re.compile(r'[(<]([^()<>]*?)[>)]$')
 DATE_HEAD_REGEX = re.compile(r'^(\d{4}-\d{2}-\d{2}\s+\d\d?:\d{2}:\d{2})\s+')
 
 
-def _parse_message_head(line: str) -> Optional[PartialMessage]:
+def _parse_message_head(line: str) -> Optional[MessageBuilder]:
     if (date_matcher := DATE_HEAD_REGEX.search(line)) is None:
         return None
     date = date_matcher.group().strip()
@@ -33,11 +33,11 @@ def _parse_message_head(line: str) -> Optional[PartialMessage]:
     if matcher := BRACKETS_REGEX.findall(line):
         group_user_id = cast(str, matcher[-1])
         name = DATE_HEAD_REGEX.sub('', BRACKETS_REGEX.sub('', line)).strip()
-        return PartialMessage(date=date, id=group_user_id, name=name)
+        return MessageBuilder(date=date, id=group_user_id, name=name)
 
     if not (private_user_id := DATE_HEAD_REGEX.sub('', line)):
         return None
-    return PartialMessage(date=date, id=private_user_id, name=private_user_id)
+    return MessageBuilder(date=date, id=private_user_id, name=private_user_id)
 
 
 def parse(lines: Iterable[str]) -> Iterable[Message]:
@@ -49,21 +49,21 @@ def parse(lines: Iterable[str]) -> Iterable[Message]:
     :return: a generator of messages.
     """
 
-    partial_message: Optional[PartialMessage] = None
+    builder: Optional[MessageBuilder] = None
     content_lines: deque[str] = deque()
 
-    # Generates only when extracted_id is not an empty string.
     def generate_prev() -> Iterator[Message]:
-        if partial_message is None:
+        if builder is None:
             return
-        yield partial_message.build_message('\n'.join(
+
+        yield builder.build_message('\n'.join(
             content_lines.popleft() for _ in range(len(content_lines))
         ))
 
     for line in dropwhile(lambda li: _parse_message_head(li) is None, lines):
-        if next_partial_message := _parse_message_head(line):
+        if next_builder := _parse_message_head(line):
             yield from generate_prev()
-            partial_message = next_partial_message
+            builder = next_builder
         elif line:
             # Omit blank lines.
             content_lines.append(line)
