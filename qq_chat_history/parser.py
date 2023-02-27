@@ -7,8 +7,7 @@ from typing import Type, Iterable, Iterator, Callable, Optional, cast
 from .message import Message
 
 
-ANGLE_BRACKETS_REGEX = re.compile(r'<([^<>]*?)>$')
-BRACKETS_REGEX = re.compile(r'[(]([^()]*?)[)]$')
+BRACKETS_REGEX = re.compile(r'[(<]([^()<>]*?)[>)]$')
 DATE_HEAD_REGEX = re.compile(r'^(\d{4}-\d{2}-\d{2}\s+\d\d?:\d{2}:\d{2})\s+')
 
 
@@ -105,11 +104,10 @@ class GroupParser(Parser):
         if not (date := DATE_HEAD_REGEX.search(line)):
             return None
 
-        for brackets in (BRACKETS_REGEX, ANGLE_BRACKETS_REGEX):
-            if groups := brackets.findall(line):
-                extracted_id = cast(str, groups[-1])
-                self._names[extracted_id] = DATE_HEAD_REGEX.sub('', line[:-len(extracted_id) - 2]).strip()
-                return date.group().strip(), extracted_id
+        if groups := BRACKETS_REGEX.findall(line):
+            extracted_id = cast(str, groups[-1])
+            self._names[extracted_id] = DATE_HEAD_REGEX.sub('', line[:-len(extracted_id) - 2]).strip()
+            return date.group().strip(), extracted_id
 
         return None
 
