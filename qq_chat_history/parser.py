@@ -1,6 +1,6 @@
 import re
 from abc import ABC, abstractmethod
-from collections import deque, namedtuple
+from collections import deque
 from itertools import dropwhile
 from typing import Type, Iterable, Iterator, Callable, Optional, cast
 
@@ -12,7 +12,8 @@ BRACKETS_REGEX = re.compile(r'[(]([^()]*?)[)]$')
 DATE_HEAD_REGEX = re.compile(r'^(\d{4}-\d{2}-\d{2}\s+\d\d?:\d{2}:\d{2})\s+')
 
 
-MessageHead = namedtuple('MessageType', ('date', 'id'))
+# The first one is date, and the second one is id.
+MessageHead = tuple[str, str]
 
 
 class Parser(ABC):
