@@ -1,5 +1,5 @@
 import re
-import abc
+from abc import ABC, abstractmethod
 from collections import deque, namedtuple
 from itertools import dropwhile
 from typing import Type, Iterable, Iterator, Callable, Optional, cast
@@ -15,7 +15,7 @@ DATE_HEAD_REGEX = re.compile(r'^(\d{4}-\d{2}-\d{2}\s+\d\d?:\d{2}:\d{2})\s+')
 MessageHead = namedtuple('MessageType', ('date', 'id'))
 
 
-class Parser(abc.ABC):
+class Parser(ABC):
     """
     The parser to parse lines from a chat history file exported from QQ.
     >>> parser = Parser.get_instance('group')  # or private
@@ -23,11 +23,11 @@ class Parser(abc.ABC):
     >>>     ...
     """
 
-    @abc.abstractmethod
+    @abstractmethod
     def _parse_message_head(self, line: str) -> Optional[MessageHead]:
         raise NotImplementedError()
 
-    @abc.abstractmethod
+    @abstractmethod
     def _get_display_name(self, extracted_id: str) -> str:
         raise NotImplementedError()
 
