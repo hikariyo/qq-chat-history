@@ -1,8 +1,7 @@
 import re
-from abc import ABC, abstractmethod
 from collections import deque
 from itertools import dropwhile
-from typing import Type, Iterable, Iterator, Callable, Optional, cast
+from typing import Iterable, Iterator, Optional, cast
 
 from .message import Message
 
@@ -26,14 +25,13 @@ class Parser:
     def __init__(self) -> None:
         self._names: dict[str, str] = {}
 
-    @abstractmethod
     def _parse_message_head(self, line: str) -> Optional[MessageHead]:
-        if not (date := DATE_HEAD_REGEX.search(line)):
+        if (date_matcher := DATE_HEAD_REGEX.search(line)) is None:
             return None
-        date = date.group().strip()
+        date = date_matcher.group().strip()
 
-        if match := BRACKETS_REGEX.findall(line):
-            group_id = cast(str, match[-1])
+        if matcher := BRACKETS_REGEX.findall(line):
+            group_id = cast(str, matcher[-1])
             self._names[group_id] = DATE_HEAD_REGEX.sub('', line[:-len(group_id) - 2]).strip()
             return date, group_id
 
