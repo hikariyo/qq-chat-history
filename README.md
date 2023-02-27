@@ -52,3 +52,30 @@ for msg in qq_chat_history.parse(lines):
 ```
 
 注意 `parse` 方法返回的是一个生成器。
+
+
+## 更新
+
+
+经过不懈努力，本项目在 `0.2` 版本中终于把冗长的类给干掉了，再也不用写 `Parser.get_instance('xxx').parse(lines)` 了，直接调用 `parse` 方法即可。
+
+
+但是，由于 `parse` 这个名字的含义比较不清晰，所以使用方式如下：
+
+
+```python
+# Not recommended 👎
+from qq_chat_history import parse
+parse(...)
+
+
+# Recommended 👍
+import qq_chat_history
+qq_chat_history.parse(...)
+
+
+from qq_chat_history import parse as parse_qq
+parse_qq(...)
+```
+
+我个人认为使用 `import` 更符合直觉。
