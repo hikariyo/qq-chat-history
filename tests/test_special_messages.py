@@ -12,12 +12,18 @@ date_lines = '''
 
 1883-03-07 22:00:51 A
 2006-01-02 15:04:05
+
+
+
+
+2006-01-02 15:04:05
 '''.strip().splitlines()
 
 
 date_expected_messages = [
     Message(date='1883-03-07 11:22:33', id='A', name='A', content='1883-03-07 11:22:33'),
-    Message(date='1883-03-07 22:00:51', id='A', name='A', content='2006-01-02 15:04:05'),
+    # Blank lines will be omitted.
+    Message(date='1883-03-07 22:00:51', id='A', name='A', content='2006-01-02 15:04:05\n2006-01-02 15:04:05'),
 ]
 
 name_lines = '''

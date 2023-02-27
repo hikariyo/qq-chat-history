@@ -66,6 +66,7 @@ class Parser(ABC):
                 yield from generate_prev()
                 date, extracted_id = message_head
             elif line:
+                # Omit blank lines.
                 content_lines.append(line)
 
         yield from generate_prev()
