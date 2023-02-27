@@ -26,10 +26,7 @@
 或者，你可以在代码中使用，如下：
 
 ```python
-from qq_chat_history import Parser
-
-
-parser = Parser.get_instance('group')
+import qq_chat_history
 
 lines = '''
 =========
@@ -50,8 +47,8 @@ TCG
 塔菲怎么你了
 '''.strip().splitlines()
 
-for msg in parser.parse(lines):
+for msg in qq_chat_history.parse(lines):
     print(msg.date, msg.id, msg.name, msg.content)
 ```
 
-注意 `parser.parse` 方法返回的是一个生成器。
+注意 `parse` 方法返回的是一个生成器。
