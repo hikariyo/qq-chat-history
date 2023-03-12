@@ -2,7 +2,7 @@ import re
 from itertools import dropwhile
 from collections import deque
 from dataclasses import dataclass
-from typing import Iterable, Iterator, Optional, cast
+from typing import Iterable, Optional, cast
 
 from .message import Message
 
@@ -26,6 +26,12 @@ DATE_HEAD_REGEX = re.compile(r'^(\d{4}-\d{2}-\d{2}\s+\d\d?:\d{2}:\d{2})\s+')
 
 
 def _parse_message_head(line: str) -> Optional[MessageBuilder]:
+    """
+    Parses a message head, returns None if given line is not a message head.
+    :param line: the line to parse.
+    :return: the builder with current line filled.
+    """
+
     if (date_matcher := DATE_HEAD_REGEX.search(line)) is None:
         return None
     date = date_matcher.group().strip()
@@ -40,6 +46,23 @@ def _parse_message_head(line: str) -> Optional[MessageBuilder]:
     return MessageBuilder(date=date, id=private_user_id, name=private_user_id)
 
 
+def _gen_from_builder(builder: Optional[MessageBuilder], content_lines: deque[str]) -> Iterable[Message]:
+    """
+    Generates a message from given builder, or nothing if the builder itself is None.
+
+    :param builder: the builder to build a message.
+    :param content_lines: the content lines.
+    :return: a generator to generate single message or nothing.
+    """
+
+    if builder is None:
+        return
+
+    yield builder.build_message('\n'.join(
+        content_lines.popleft() for _ in range(len(content_lines))
+    ))
+
+
 def parse(lines: Iterable[str]) -> Iterable[Message]:
     """
     Parses given lines and returns a generator of messages.
@@ -52,20 +75,12 @@ def parse(lines: Iterable[str]) -> Iterable[Message]:
     builder: Optional[MessageBuilder] = None
     content_lines: deque[str] = deque()
 
-    def generate_prev() -> Iterator[Message]:
-        if builder is None:
-            return
-
-        yield builder.build_message('\n'.join(
-            content_lines.popleft() for _ in range(len(content_lines))
-        ))
-
     for line in dropwhile(lambda li: _parse_message_head(li) is None, lines):
         if next_builder := _parse_message_head(line):
-            yield from generate_prev()
+            yield from _gen_from_builder(builder, content_lines)
             builder = next_builder
         elif line:
             # Omit blank lines.
             content_lines.append(line)
 
-    yield from generate_prev()
+    yield from _gen_from_builder(builder, content_lines)
