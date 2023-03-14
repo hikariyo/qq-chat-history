@@ -44,4 +44,4 @@ def test_yaml() -> None:
     fp = StringIO()
     format_yaml(fp, parse(lines))
     fp.seek(0)
-    assert yaml.safe_load(fp) == expected_dicts
+    assert yaml.load(fp, Loader=yaml.CLoader) == expected_dicts

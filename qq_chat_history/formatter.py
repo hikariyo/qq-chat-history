@@ -10,7 +10,7 @@ def format_json(fp: TextIO, messages: Iterable[Message], indent: int = 2) -> Non
 
 
 def format_yaml(fp: TextIO, messages: Iterable[Message], indent: int = 2) -> None:
-    yaml.safe_dump([m.__dict__ for m in messages], fp, allow_unicode=True, indent=indent)
+    yaml.dump([m.__dict__ for m in messages], fp, allow_unicode=True, indent=indent, Dumper=yaml.CDumper)
 
 
 formatters = {
