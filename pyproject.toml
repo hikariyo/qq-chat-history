@@ -21,6 +21,7 @@ pytest = "^7.2.1"
 types-ujson = "^5.7.0.0"
 mypy = "^0.991"
 flake8 = "^6.0.0"
+types-pyyaml = "^6.0.12.8"
 
 
 [tool.poetry.scripts]
