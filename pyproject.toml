@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "qq-chat-history"
-version = "0.2.3"
+version = "0.2.4"
 description = "A tool to extract QQ chat history."
 authors = ["kifuan <kifuan@foxmail.com>"]
 license = "MIT"
