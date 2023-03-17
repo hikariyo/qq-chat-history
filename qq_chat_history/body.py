@@ -1,6 +1,7 @@
 import re
 import yaml
 import ujson
+from io import TextIOBase
 from pathlib import Path
 from itertools import dropwhile
 from collections import deque
@@ -79,7 +80,7 @@ class Body:
         return cls.from_lines(path.read_text('utf8'))
 
     def save(self, fp: TextIO, fmt: str, indent: int) -> None:
-        """Saves the body to file."""
+        """Saves the body to file, supporting `yaml` and `json` files."""
 
         data = [m.__dict__ for m in self._messages]
 
@@ -138,9 +139,13 @@ class Body:
         return next(self.find_by_name(name), None)
 
 
-def parse(data: Union[Iterable[str], str, Path]) -> Body:
+def parse(data: Union[Iterable[str], TextIOBase, str, Path]) -> Body:
     """Parses given data in a message group."""
 
     if isinstance(data, (str, Path)):
         return Body.from_path(data)
+
+    if isinstance(data, TextIOBase):
+        data = data.read().splitlines()
+
     return Body.from_lines(data)
