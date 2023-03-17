@@ -1,16 +1,14 @@
 from .message import (
-    parse as parse,
     Message as Message,
-    MessageGroup as MessageGroup,
 )
-from .formatter import (
-    Formatter,
+from .body import (
+    parse as parse,
+    Body as Body,
 )
 
 
 __all__ = [
     'parse',
     'Message',
-    'MessageGroup',
-    'Formatter',
+    'Body',
 ]

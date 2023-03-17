@@ -1,7 +1,7 @@
 import yaml
 import ujson
 from io import StringIO
-from qq_chat_history import parse, Formatter
+from qq_chat_history import parse
 
 
 lines = '''
@@ -33,13 +33,9 @@ expected_dicts = [
 ]
 
 
-def do_format(kind: str) -> StringIO:
+def do_format(fmt: str) -> StringIO:
     fp = StringIO()
-    Formatter.get(kind).format(
-        messages=parse(lines),
-        indent=2,
-        fp=fp,
-    )
+    parse(lines).save(fp, fmt, indent=2)
     fp.seek(0)
     return fp
 

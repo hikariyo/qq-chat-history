@@ -1,7 +1,7 @@
 import click
 from pathlib import Path
 
-from . import parse, Formatter
+from . import parse
 
 
 @click.command()
@@ -18,8 +18,4 @@ def run(input_file: Path, output_file: Path, output_format: str, indent: int) ->
         output_file = output_file.with_suffix(f'.{output_format}')
 
     with output_file.open('w', encoding='utf8') as fp:
-        Formatter.get(output_format).format(
-            fp=fp,
-            messages=parse(input_file),
-            indent=indent,
-        )
+        parse(input_file).save(fp, output_format, indent)
