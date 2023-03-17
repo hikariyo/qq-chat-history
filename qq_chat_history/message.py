@@ -3,7 +3,7 @@ from pathlib import Path
 from itertools import dropwhile
 from collections import deque
 from dataclasses import dataclass
-from typing import Iterable, Optional, cast, Union
+from typing import Iterable, Iterator, Optional, cast, Union
 
 
 BRACKETS_REGEX = re.compile(r'[(<]([^()<>]*?)[>)]$')
@@ -91,7 +91,7 @@ class MessageGroup:
             path = Path(path)
         return cls.from_lines(path.read_text('utf8'))
 
-    def __iter__(self) -> Iterable[Message]:
+    def __iter__(self) -> Iterator[Message]:
         """Iterates over the messages."""
         yield from self._messages
 

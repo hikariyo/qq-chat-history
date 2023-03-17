@@ -1,7 +1,7 @@
 import yaml
 import ujson
 from io import StringIO
-from qq_chat_history import parse, format_json, format_yaml
+from qq_chat_history import parse, Formatter
 
 
 lines = '''
@@ -33,15 +33,20 @@ expected_dicts = [
 ]
 
 
-def test_json() -> None:
+def do_format(kind: str) -> StringIO:
     fp = StringIO()
-    format_json(fp, parse(lines))
+    Formatter.get(kind).format(
+        messages=parse(lines),
+        indent=2,
+        fp=fp,
+    )
     fp.seek(0)
-    assert ujson.load(fp) == expected_dicts
+    return fp
 
 
-def test_yaml() -> None:
-    fp = StringIO()
-    format_yaml(fp, parse(lines))
-    fp.seek(0)
-    assert yaml.load(fp, Loader=yaml.CLoader) == expected_dicts
+def test_formatters() -> None:
+    with do_format('json') as f:
+        assert ujson.load(f) == expected_dicts
+
+    with do_format('yaml') as f:
+        assert yaml.load(f, Loader=yaml.CLoader) == expected_dicts

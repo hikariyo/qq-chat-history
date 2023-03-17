@@ -4,9 +4,7 @@ from .message import (
     MessageGroup as MessageGroup,
 )
 from .formatter import (
-    formatters as formatters,
-    format_yaml as format_yaml,
-    format_json as format_json,
+    Formatter,
 )
 
 
@@ -14,7 +12,5 @@ __all__ = [
     'parse',
     'Message',
     'MessageGroup',
-    'formatters',
-    'format_yaml',
-    'format_json',
+    'Formatter',
 ]

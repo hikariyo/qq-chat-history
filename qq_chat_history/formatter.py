@@ -1,19 +1,43 @@
 import yaml
 import ujson
-from typing import TextIO, Iterable
+from abc import ABC, abstractmethod
+from typing import TextIO, Any, Type
 
-from .message import Message
-
-
-def format_json(fp: TextIO, messages: Iterable[Message], indent: int = 2) -> None:
-    ujson.dump([m.__dict__ for m in messages], fp, ensure_ascii=False, indent=indent)
+from .message import MessageGroup
 
 
-def format_yaml(fp: TextIO, messages: Iterable[Message], indent: int = 2) -> None:
-    yaml.dump([m.__dict__ for m in messages], fp, allow_unicode=True, indent=indent, Dumper=yaml.CDumper)
+class Formatter(ABC):
+    _formatters: dict[str, Type['Formatter']] = {}
+
+    def __init_subclass__(cls, kind: str = '', **kwargs: Any) -> None:
+        super().__init_subclass__(**kwargs)
+        cls._formatters[kind] = cls
+
+    @classmethod
+    def get(cls, kind: str) -> 'Formatter':
+        if formatter := cls._formatters.get(kind):
+            return formatter()
+        raise TypeError(f'unknown formatter kind: {kind}')
+
+    @abstractmethod
+    def format(self, *, fp: TextIO, messages: MessageGroup, indent: int) -> None:
+        raise NotImplementedError()
 
 
-formatters = {
-    'json': format_json,
-    'yaml': format_yaml,
-}
+class JSONFormatter(Formatter, kind='json'):
+    def format(self, *, fp: TextIO, messages: MessageGroup, indent: int) -> None:
+        ujson.dump(
+            [m.__dict__ for m in messages], fp,
+            ensure_ascii=False,
+            indent=indent,
+        )
+
+
+class YAMLFormatter(Formatter, kind='yaml'):
+    def format(self, *, fp: TextIO, messages: MessageGroup, indent: int) -> None:
+        yaml.dump(
+            [m.__dict__ for m in messages], fp,
+            allow_unicode=True,
+            indent=indent,
+            Dumper=yaml.CDumper,
+        )
