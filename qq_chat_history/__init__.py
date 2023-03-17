@@ -1,5 +1,8 @@
-from .parser import parse as parse
-from .message import Message as Message
+from .message import (
+    parse as parse,
+    Message as Message,
+    MessageGroup as MessageGroup,
+)
 from .formatter import (
     formatters as formatters,
     format_yaml as format_yaml,
@@ -10,6 +13,7 @@ from .formatter import (
 __all__ = [
     'parse',
     'Message',
+    'MessageGroup',
     'formatters',
     'format_yaml',
     'format_json',
