@@ -13,7 +13,14 @@ DATE_HEAD_REGEX = re.compile(r'^(\d{4}-\d{2}-\d{2}\s+\d\d?:\d{2}:\d{2})\s+')
 
 
 class Body:
+    """The parsed chat-history file body containing messages."""
+
     def __init__(self, messages: list[Message]) -> None:
+        """Initializes the body with messages.
+        It is not recommended to construct a body directly.
+        Instead, you should use `from_xxx`, which are class methods.
+        """
+
         self._messages = messages
 
     @staticmethod
@@ -101,6 +108,8 @@ class Body:
         yield from self._messages
 
     def __len__(self) -> int:
+        """Counts the messages."""
+
         return len(self._messages)
 
     def _find_by_predicate(self, predicate: Callable[[Message], bool]) -> Generator[Message, None, None]:
