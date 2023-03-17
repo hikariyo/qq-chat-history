@@ -4,7 +4,7 @@ import ujson
 from pathlib import Path
 from itertools import dropwhile
 from collections import deque
-from typing import Iterable, Iterator, Optional, cast, Union, TextIO
+from typing import Iterable, Optional, cast, Union, TextIO, Callable, Generator
 from .message import Message, MessageBuilder
 
 
@@ -95,9 +95,38 @@ class Body:
 
         raise NameError(f'unknown format name {fmt}')
 
-    def __iter__(self) -> Iterator[Message]:
+    def __iter__(self) -> Generator[Message, None, None]:
         """Iterates over the messages."""
+
         yield from self._messages
+
+    def __len__(self) -> int:
+        return len(self._messages)
+
+    def _find_by_predicate(self, predicate: Callable[[Message], bool]) -> Generator[Message, None, None]:
+        for msg in self._messages:
+            if predicate(msg):
+                yield msg
+
+    def find_by_id(self, id_: str) -> Generator[Message, None, None]:
+        """Finds all messages by given id."""
+
+        return self._find_by_predicate(lambda m: m.id == id_)
+
+    def find_by_name(self, name: str) -> Generator[Message, None, None]:
+        """Finds all messages by given name."""
+
+        return self._find_by_predicate(lambda m: m.name == name)
+
+    def find_first_by_id(self, id_: str) -> Optional[Message]:
+        """Finds first message by given id."""
+
+        return next(self.find_by_id(id_), None)
+
+    def find_first_by_name(self, name: str) -> Optional[Message]:
+        """Finds first message by given name."""
+
+        return next(self.find_by_name(name), None)
 
 
 def parse(data: Union[Iterable[str], str, Path]) -> Body:

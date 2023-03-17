@@ -15,5 +15,4 @@ lines = '''
 
 
 def test_empty() -> None:
-    assert not list(parse(lines))
-    assert not list(parse(lines))
+    assert len(parse(lines)) == 0

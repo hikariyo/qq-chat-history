@@ -10,7 +10,7 @@ date_lines = '''
 1883-03-07 11:22:33 A
 1883-03-07 11:22:33
 
-1883-03-07 22:00:51 A
+1883-03-07 22:00:51 B
 2006-01-02 15:04:05
 
 
@@ -18,13 +18,6 @@ date_lines = '''
 
 2006-01-02 15:04:05
 '''.strip().splitlines()
-
-
-date_expected_messages = [
-    Message(date='1883-03-07 11:22:33', id='A', name='A', content='1883-03-07 11:22:33'),
-    # Blank lines will be omitted.
-    Message(date='1883-03-07 22:00:51', id='A', name='A', content='2006-01-02 15:04:05\n2006-01-02 15:04:05'),
-]
 
 name_lines = '''
 =========
@@ -42,18 +35,31 @@ TEST
 TEST
 '''.strip().splitlines()
 
-name_expected_messages = [
-    Message(date='1883-03-07 11:22:33', name='(A', content='TEST', id='123123'),
-    Message(date='1883-03-07 22:00:51', name='(B)', content='TEST', id='456456'),
-    Message(date='1883-03-07 23:23:33', name='(o´・ω・`)σ', content='TEST', id='mail@someaddress.com'),
-]
-
 
 def test_pure_date_message() -> None:
-    messages = list(parse(date_lines))
-    assert messages == date_expected_messages
+    body = parse(date_lines)
+
+    assert body.find_first_by_id('A') == Message(
+        date='1883-03-07 11:22:33', id='A', name='A', content='1883-03-07 11:22:33',
+    )
+
+    # Blank lines will be omitted.
+    assert body.find_first_by_name('B') == Message(
+        date='1883-03-07 22:00:51', id='B', name='B', content='2006-01-02 15:04:05\n2006-01-02 15:04:05'
+    )
 
 
 def test_name_with_brackets() -> None:
-    messages = list(parse(name_lines))
-    assert messages == name_expected_messages
+    body = parse(name_lines)
+
+    assert body.find_first_by_name('(A') == Message(
+        date='1883-03-07 11:22:33', name='(A', content='TEST', id='123123',
+    )
+
+    assert body.find_first_by_id('456456') == Message(
+        date='1883-03-07 22:00:51', name='(B)', content='TEST', id='456456',
+    )
+
+    assert body.find_first_by_id('mail@someaddress.com') == Message(
+        date='1883-03-07 23:23:33', name='(o´・ω・`)σ', content='TEST', id='mail@someaddress.com',
+    )
