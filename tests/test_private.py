@@ -1,10 +1,6 @@
 from qq_chat_history import Message, parse
 
 lines = '''
-=========
-假装我是 QQ 自动生成的文件头
-=========
-
 1883-03-07 12:34:56 B
 你说得对
 
