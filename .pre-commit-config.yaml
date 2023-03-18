@@ -3,3 +3,4 @@ repos:
     rev: v2.4.0
     hooks:
       - id: add-trailing-comma
+        args: [--py36-plus]

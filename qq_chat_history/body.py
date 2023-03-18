@@ -46,9 +46,11 @@ class Body:
         if builder is None:
             return
 
-        yield builder.build_message('\n'.join(
-            content_lines.popleft() for _ in range(len(content_lines))
-        ))
+        yield builder.build_message(
+            '\n'.join(
+                content_lines.popleft() for _ in range(len(content_lines))
+            ),
+        )
 
     @classmethod
     def from_lines(cls, lines: Iterable[str]) -> 'Body':

@@ -45,7 +45,7 @@ def test_pure_date_message() -> None:
 
     # Blank lines will be omitted.
     assert body.find_first_by_name('B') == Message(
-        date='1883-03-07 22:00:51', id='B', name='B', content='2006-01-02 15:04:05\n2006-01-02 15:04:05'
+        date='1883-03-07 22:00:51', id='B', name='B', content='2006-01-02 15:04:05\n2006-01-02 15:04:05',
     )
 
 
