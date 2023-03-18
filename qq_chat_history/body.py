@@ -1,9 +1,10 @@
 import re
 from collections import deque
+from functools import lru_cache
 from io import TextIOBase
 from itertools import dropwhile
 from pathlib import Path
-from typing import Generator, Iterable, Optional, TextIO, Union, cast
+from typing import Iterator, Iterable, Optional, TextIO, Union, cast
 
 import ujson
 import yaml
@@ -101,7 +102,7 @@ class Body:
 
         raise NameError(f'unknown format name {fmt}')
 
-    def __iter__(self) -> Generator[Message, None, None]:
+    def __iter__(self) -> Iterator[Message]:
         """Iterates over the messages."""
         yield from self._messages
 
@@ -109,21 +110,32 @@ class Body:
         """Counts the messages."""
         return len(self._messages)
 
-    def find_by_id(self, id_: str) -> Generator[Message, None, None]:
+    def get_names(self, id_: str) -> list[str]:
+        """Gets all names used by given id."""
+        return [msg.name for msg in self._messages if msg.id == id_]
+
+    @lru_cache()
+    def get_latest_name(self, id_: str) -> Optional[str]:
+        """Gets the latest name used by given id."""
+        if names := self.get_names(id_):
+            return names[-1]
+        return None
+
+    def find_messages_by_id(self, id_: str) -> list[Message]:
         """Finds all messages by given id."""
-        yield from filter(lambda m: m.id == id_, self._messages)
+        return [msg for msg in self._messages if msg.id == id_]
 
-    def find_by_name(self, name: str) -> Generator[Message, None, None]:
+    def find_messages_by_name(self, name: str) -> list[Message]:
         """Finds all messages by given name."""
-        yield from filter(lambda m: m.name == name, self._messages)
+        return [msg for msg in self._messages if msg.name == name]
 
-    def find_first_by_id(self, id_: str) -> Optional[Message]:
+    def find_first_message_by_id(self, id_: str) -> Optional[Message]:
         """Finds first message by given id."""
-        return next(self.find_by_id(id_), None)
+        return next(filter(lambda m: m.id == id_, self._messages), None)
 
-    def find_first_by_name(self, name: str) -> Optional[Message]:
+    def find_first_message_by_name(self, name: str) -> Optional[Message]:
         """Finds first message by given name."""
-        return next(self.find_by_name(name), None)
+        return next(filter(lambda m: m.name == name, self._messages), None)
 
 
 def parse(data: Union[Iterable[str], TextIOBase, str, Path]) -> Body:
