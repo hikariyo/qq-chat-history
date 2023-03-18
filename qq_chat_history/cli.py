@@ -13,6 +13,7 @@ from . import parse
 @click.option('--output-format', '-f', prompt='Output format', help='Output file format.',
               type=click.Choice(['json', 'yaml']), default='json')
 def run(input_file: Path, output_file: Path, output_format: str, indent: int) -> None:
+    """The entrance of CLI."""
     if not output_file.suffix:
         output_file = output_file.with_suffix(f'.{output_format}')
 

@@ -18,16 +18,15 @@ class Body:
 
     def __init__(self, messages: list[Message]) -> None:
         """Initializes the body with messages.
+
         It is not recommended to construct a body directly.
         Instead, you should use `from_xxx`, which are class methods.
         """
-
         self._messages = messages
 
     @staticmethod
     def _make_builder_from_head(line: str) -> Optional[MessageBuilder]:
         """Parses a message head, returns None if given line is not a message head."""
-
         if (date_matcher := DATE_HEAD_REGEX.search(line)) is None:
             return None
         date = date_matcher.group().strip()
@@ -44,7 +43,6 @@ class Body:
     @staticmethod
     def _gen_from_builder(builder: Optional[MessageBuilder], content_lines: deque[str]) -> Iterable[Message]:
         """Generates a message from given builder, or nothing if the builder itself is None."""
-
         if builder is None:
             return
 
@@ -55,7 +53,6 @@ class Body:
     @classmethod
     def from_lines(cls, lines: Iterable[str]) -> 'Body':
         """Creates a message group from lines."""
-
         messages: list[Message] = []
         builder: Optional[MessageBuilder] = None
         content_lines: deque[str] = deque()
@@ -74,14 +71,12 @@ class Body:
     @classmethod
     def from_path(cls, path: Union[str, Path]) -> 'Body':
         """Creates a message group from path to certain file."""
-
         if isinstance(path, str):
             path = Path(path)
         return cls.from_lines(path.read_text('utf8'))
 
     def save(self, fp: TextIO, fmt: str, indent: int) -> None:
         """Saves the body to file, supporting `yaml` and `json` files."""
-
         data = [m.__dict__ for m in self._messages]
 
         if fmt == 'json':
@@ -105,43 +100,31 @@ class Body:
 
     def __iter__(self) -> Generator[Message, None, None]:
         """Iterates over the messages."""
-
         yield from self._messages
 
     def __len__(self) -> int:
         """Counts the messages."""
-
         return len(self._messages)
-
-    def _find_by_predicate(self, predicate: Callable[[Message], bool]) -> Generator[Message, None, None]:
-        for msg in self._messages:
-            if predicate(msg):
-                yield msg
 
     def find_by_id(self, id_: str) -> Generator[Message, None, None]:
         """Finds all messages by given id."""
-
-        return self._find_by_predicate(lambda m: m.id == id_)
+        yield from filter(lambda m: m.id == id_, self._messages)
 
     def find_by_name(self, name: str) -> Generator[Message, None, None]:
         """Finds all messages by given name."""
-
-        return self._find_by_predicate(lambda m: m.name == name)
+        yield from filter(lambda m: m.name == name, self._messages)
 
     def find_first_by_id(self, id_: str) -> Optional[Message]:
         """Finds first message by given id."""
-
         return next(self.find_by_id(id_), None)
 
     def find_first_by_name(self, name: str) -> Optional[Message]:
         """Finds first message by given name."""
-
         return next(self.find_by_name(name), None)
 
 
 def parse(data: Union[Iterable[str], TextIOBase, str, Path]) -> Body:
     """Parses given data in a message group."""
-
     if isinstance(data, (str, Path)):
         return Body.from_path(data)
 
