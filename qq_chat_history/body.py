@@ -131,11 +131,17 @@ class Body:
 
     def find_first_message_by_id(self, id_: str) -> Optional[Message]:
         """Finds first message by given id."""
-        return next(filter(lambda m: m.id == id_, self._messages), None)
+        for msg in self._messages:
+            if msg.id == id_:
+                return msg
+        return None
 
     def find_first_message_by_name(self, name: str) -> Optional[Message]:
         """Finds first message by given name."""
-        return next(filter(lambda m: m.name == name, self._messages), None)
+        for msg in self._messages:
+            if msg.name == name:
+                return msg
+        return None
 
 
 def parse(data: Union[Iterable[str], TextIOBase, str, Path]) -> Body:

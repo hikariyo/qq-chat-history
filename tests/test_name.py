@@ -17,7 +17,7 @@ lines = """
 """.strip().splitlines()
 
 
-def test_name():
+def test_name() -> None:
     body = parse(lines)
     assert body.get_latest_name('123123') == 'C'
     assert body.get_names('123123') == [
