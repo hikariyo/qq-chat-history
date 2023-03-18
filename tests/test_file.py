@@ -5,7 +5,7 @@ from qq_chat_history import Message, parse
 file = Path(__file__).parent / 'file.txt'
 
 
-def test_file():
+def test_file() -> None:
     body = parse(file)
 
     assert body.find_first_message_by_id('123123') == Message(
