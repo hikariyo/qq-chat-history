@@ -110,14 +110,14 @@ class Body:
         """Counts the messages."""
         return len(self._messages)
 
-    def get_names(self, id_: str) -> list[str]:
+    def find_names(self, id_: str) -> list[str]:
         """Gets all names used by given id."""
         return [msg.name for msg in self._messages if msg.id == id_]
 
     @lru_cache()
-    def get_latest_name(self, id_: str) -> Optional[str]:
+    def find_latest_name(self, id_: str) -> Optional[str]:
         """Gets the latest name used by given id."""
-        if names := self.get_names(id_):
+        if names := self.find_names(id_):
             return names[-1]
         return None
 

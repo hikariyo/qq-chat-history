@@ -14,7 +14,7 @@ lines = """
 
 def test_name() -> None:
     body = parse(lines)
-    assert body.get_latest_name('123123') == '(B'
-    assert body.get_names('123123') == [
+    assert body.find_latest_name('123123') == '(B'
+    assert body.find_names('123123') == [
         '(o´・ω・`)σ', '(A)', '(B',
     ]
