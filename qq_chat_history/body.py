@@ -4,7 +4,7 @@ from functools import lru_cache
 from io import TextIOBase
 from itertools import dropwhile
 from pathlib import Path
-from typing import Iterator, Iterable, Optional, TextIO, Union, cast
+from typing import Iterable, Iterator, Optional, TextIO, Union, cast
 
 import ujson
 import yaml

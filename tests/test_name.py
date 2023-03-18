@@ -1,6 +1,5 @@
 from qq_chat_history import parse
 
-
 lines = """
 1883-03-07 11:22:33 (o´・ω・`)σ(123123)
 可爱捏
