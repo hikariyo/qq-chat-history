@@ -1,8 +1,9 @@
-import yaml
-import ujson
 from io import StringIO
-from qq_chat_history import parse
 
+import ujson
+import yaml
+
+from qq_chat_history import parse
 
 lines = '''
 =========

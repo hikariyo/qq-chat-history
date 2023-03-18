@@ -1,6 +1,5 @@
 from qq_chat_history import parse
 
-
 lines = '''
 ===
 假装我是文件头

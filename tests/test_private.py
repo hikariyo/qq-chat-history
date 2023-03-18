@@ -1,4 +1,4 @@
-from qq_chat_history import parse, Message
+from qq_chat_history import Message, parse
 
 lines = '''
 =========

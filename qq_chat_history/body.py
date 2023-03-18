@@ -1,13 +1,14 @@
 import re
-import yaml
-import ujson
-from io import TextIOBase
-from pathlib import Path
-from itertools import dropwhile
 from collections import deque
-from typing import Iterable, Optional, cast, Union, TextIO, Generator
-from .message import Message, MessageBuilder
+from io import TextIOBase
+from itertools import dropwhile
+from pathlib import Path
+from typing import Generator, Iterable, Optional, TextIO, Union, cast
 
+import ujson
+import yaml
+
+from .message import Message, MessageBuilder
 
 BRACKETS_REGEX = re.compile(r'[(<]([^()<>]*?)[>)]$')
 DATE_HEAD_REGEX = re.compile(r'^(\d{4}-\d{2}-\d{2}\s+\d\d?:\d{2}:\d{2})\s+')
