@@ -22,11 +22,14 @@ types-ujson = "^5.7.0.0"
 mypy = "^0.991"
 flake8 = "^6.0.0"
 types-pyyaml = "^6.0.12.8"
-pre-commit = "^3.2.0"
 
 
 [tool.poetry.scripts]
 qq-chat-history = "qq_chat_history.cli:run"
+
+
+[tool.mypy]
+strict = true
 
 
 [build-system]

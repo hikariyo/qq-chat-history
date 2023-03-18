@@ -5,7 +5,7 @@ from io import TextIOBase
 from pathlib import Path
 from itertools import dropwhile
 from collections import deque
-from typing import Iterable, Optional, cast, Union, TextIO, Callable, Generator
+from typing import Iterable, Optional, cast, Union, TextIO, Generator
 from .message import Message, MessageBuilder
 
 
