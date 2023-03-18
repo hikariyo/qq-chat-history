@@ -77,7 +77,7 @@ class Body:
         """Creates a message group from path to certain file."""
         if isinstance(path, str):
             path = Path(path)
-        return cls.from_lines(path.read_text('utf8'))
+        return cls.from_lines(path.read_text('utf8').splitlines())
 
     def save(self, fp: TextIO, fmt: str, indent: int) -> None:
         """Saves the body to file, supporting `yaml` and `json` files."""
