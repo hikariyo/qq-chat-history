@@ -18,3 +18,4 @@ def test_name() -> None:
     assert body.find_names('123123') == [
         '(o´・ω・`)σ', '(A)', '(B',
     ]
+    assert body.find_latest_name('does not exist') is None
