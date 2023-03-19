@@ -6,22 +6,19 @@ from . import parse
 
 
 @click.command()
-@click.option('--indent', '-d', prompt='Output indent', help='Output file indent.', type=int, default=2)
+@click.argument('input-file', type=click.Path(exists=True, dir_okay=False, path_type=Path))
 @click.option(
-    '--input-file', '-i', prompt='Input file path', help='Input file path.',
-    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    '--output-file', '-o', help='Output file path, with extension name auto-corrected.',
+    type=click.Path(dir_okay=False, path_type=Path), default='output.json', show_default=True,
 )
 @click.option(
-    '--output-file', '-o', prompt='Output file path(will format filled automatically)',
-    help='Output file path.', type=click.Path(dir_okay=False, path_type=Path), default='output',
+    '--output-format', '-f', help='Output file format.',
+    type=click.Choice(['json', 'yaml']), default='json', show_default=True,
 )
-@click.option(
-    '--output-format', '-f', prompt='Output format', help='Output file format.',
-    type=click.Choice(['json', 'yaml']), default='json',
-)
+@click.option('--indent', '-d', help='Output file indent.', type=int, default=2, show_default=True)
 def run(input_file: Path, output_file: Path, output_format: str, indent: int) -> None:
-    """The entrance of CLI."""
-    if not output_file.suffix:
+    """Parse a chat history file in the command line."""
+    if output_file.suffix[1:] != output_format:
         output_file = output_file.with_suffix(f'.{output_format}')
 
     with output_file.open('w', encoding='utf8') as fp:
