@@ -16,19 +16,19 @@ DATE_HEAD_REGEX = re.compile(r'^(\d{4}-\d{2}-\d{2}\s+\d\d?:\d{2}:\d{2})\s+')
 
 
 class Body:
-    """The parsed chat-history file body containing messages."""
+    """Chat history file body containing messages."""
 
     def __init__(self, messages: list[Message]) -> None:
         """Initializes the body with messages.
 
-        It is not recommended to construct a body directly.
-        Instead, you should use `from_xxx`, which are class methods.
+        Not recommended to construct a body directly.
+        Instead, using class methods `from_xxx` is recommended.
         """
         self._messages = messages
 
     @staticmethod
     def _make_builder_from_head(line: str) -> Optional[MessageBuilder]:
-        """Parses a message head, returns None if given line is not a message head."""
+        """Parses a message head. Returns None if the given line is invalid."""
         if (date_matcher := DATE_HEAD_REGEX.search(line)) is None:
             return None
         date = date_matcher.group().strip()
@@ -56,7 +56,7 @@ class Body:
 
     @classmethod
     def from_lines(cls, lines: Iterable[str]) -> 'Body':
-        """Creates a message group from lines."""
+        """Builds a body from lines."""
         messages: list[Message] = []
         builder: Optional[MessageBuilder] = None
         content_lines: deque[str] = deque()
@@ -74,13 +74,13 @@ class Body:
 
     @classmethod
     def from_path(cls, path: Union[str, Path]) -> 'Body':
-        """Creates a message group from path to certain file."""
+        """Builds a body from path to certain file."""
         if isinstance(path, str):
             path = Path(path)
         return cls.from_lines(path.read_text('utf8').splitlines())
 
     def save(self, fp: TextIO, fmt: str, indent: int) -> None:
-        """Saves the body to file, supporting `yaml` and `json` files."""
+        """Saves to a file, supporting `yaml` and `json` formats."""
         data = [m.__dict__ for m in self._messages]
 
         if fmt == 'json':
@@ -116,7 +116,7 @@ class Body:
 
     @lru_cache()
     def find_latest_name(self, id_: str) -> Optional[str]:
-        """Gets the latest name used by given id."""
+        """Gets the latest name used by given id. Returns None when not found."""
         if names := self.find_names(id_):
             return names[-1]
         return None
@@ -130,14 +130,14 @@ class Body:
         return [msg for msg in self._messages if msg.name == name]
 
     def find_first_message_by_id(self, id_: str) -> Optional[Message]:
-        """Finds first message by given id."""
+        """Finds the first message by given id."""
         for msg in self._messages:
             if msg.id == id_:
                 return msg
         return None
 
     def find_first_message_by_name(self, name: str) -> Optional[Message]:
-        """Finds first message by given name."""
+        """Finds the first message by given name."""
         for msg in self._messages:
             if msg.name == name:
                 return msg
@@ -145,7 +145,7 @@ class Body:
 
 
 def parse(data: Union[Iterable[str], TextIOBase, str, Path]) -> Body:
-    """Parses given data in a message group."""
+    """Builds a message body by given data."""
     if isinstance(data, (str, Path)):
         return Body.from_path(data)
 
