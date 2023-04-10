@@ -27,7 +27,7 @@
 > qq-chat-history --help
 ```
 
-或者，可以在代码中使用，如下：
+或者，可以作为一个第三方库使用，如下：
 
 ```python
 import qq_chat_history
@@ -51,40 +51,23 @@ TCG
 塔菲怎么你了
 '''.strip().splitlines()
 
+# 这里的 lines 也可以是文件对象或者以字符串或者 Path 对象表示的文件路径。
 for msg in qq_chat_history.parse(lines):
     print(msg.date, msg.id, msg.name, msg.content)
 ```
 
-注意 `parse` 方法返回的是一个 `Body` 对象，一般以 `Iterable[Message]` 的形式使用。除外，`Body` 也提供了几个函数，~虽然一般也没什么用~。
+注意 `parse` 方法返回的是一个 `Body` 对象，一般以 `Iterable[Message]` 的形式使用。当然 `Body` 也提供了几个函数，~虽然一般也没什么用~。
 
 ## Tips
 
-+ 在 `0.3.0+` 版本中，对于 `parse` 方法的实现进行了大调整，它将返回一个 `Body` 类，原先是 `Iterable[Message]`。但这并**不会导致兼容性问题**，因为 `Body` 也是一个 `Iterable[Message]`。
++ 在 `0.3.0+` 版本中，对于 `parse` 方法的实现进行了较大调整，它将返回一个 `Body` 类，原先是 `Iterable[Message]`。但这并**不会导致兼容性问题**，因为 `Body` 也是一个 `Iterable[Message]`。
 
   不同的是，`Body` 类相对于原先单纯的生成器**提供更多功能**，例如`find_xxx` 方法，可以从数据中查找指定 `id` 或 `name` 的消息；`save` 方法可以将数据以 `yaml` 或 `json` 格式保存到文件中，虽然这个工作一般都直接以 `CLI` 模式启动来完成。
 
-+ 在 `0.3.0+` 版本中，你可以向 `parse` 中传入多种多样的类型。
++ 在 `0.3.0+` 版本中，你可以向 `parse` 中传入多样的类型。
 
   + `Iterable[str]`：迭代每行的可迭代对象，如 `list` 或 `tuple` 等。
   + `TextIOBase`：文本文件对象，如用 `open` 打开的文本文件，或者 `io.StringIO` 都属于文本文件对象。
   + `str`, `Path`：文件路径，如 `./data.txt`。
 
-  这些参数都将被调用合适的工厂方法来构造 `Body` 对象。
-
-+ 由于 `parse` 这个名字的含义比较不清晰，推荐与不推荐的使用方式如下：
-
-  ```python
-  # Not recommended 👎
-  from qq_chat_history import parse
-  parse(...)
-  
-  
-  # Recommended 👍
-  import qq_chat_history
-  qq_chat_history.parse(...)
-  
-  
-  from qq_chat_history import parse as parse_qq
-  parse_qq(...)
-  ```
-
+  这些参数都将以对应的方法来构造 `Body` 对象。

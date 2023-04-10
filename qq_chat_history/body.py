@@ -21,7 +21,7 @@ class Body:
     def __init__(self, messages: list[Message]) -> None:
         """Initializes the body with messages.
 
-        Not recommended to construct a body directly.
+        Constructing a body directly by this method is not recommended.
         Instead, using class methods `from_xxx` is recommended.
         """
         self._messages = messages
@@ -74,7 +74,7 @@ class Body:
 
     @classmethod
     def from_path(cls, path: Union[str, Path]) -> 'Body':
-        """Builds a body from path to certain file."""
+        """Builds a body from the path to a certain file."""
         if isinstance(path, str):
             path = Path(path)
         return cls.from_lines(path.read_text('utf8').splitlines())
@@ -145,7 +145,7 @@ class Body:
 
 
 def parse(data: Union[Iterable[str], TextIOBase, str, Path]) -> Body:
-    """Builds a message body by given data."""
+    """Builds a message body by the data in an iterable or a file."""
     if isinstance(data, (str, Path)):
         return Body.from_path(data)
 

@@ -17,7 +17,7 @@ from . import parse
 )
 @click.option('--indent', '-d', help='Output file indent.', type=int, default=2, show_default=True)
 def run(input_file: Path, output_file: Path, output_format: str, indent: int) -> None:
-    """Parse a chat history file in the CLI."""
+    """Parses a chat history file in the CLI."""
     if output_file.suffix[1:] != output_format:
         output_file = output_file.with_suffix(f'.{output_format}')
 

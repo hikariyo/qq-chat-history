@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 @dataclass()
 class Message:
-    """It represents messages in the file exported from QQ."""
+    """Messages in chat history files."""
 
     date: str
     id: str
