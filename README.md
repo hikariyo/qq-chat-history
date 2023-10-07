@@ -38,17 +38,17 @@ lines = '''
 =========
 
 1883-03-07 11:22:33 A<someone@example.com>
-关注永雏塔菲喵
-关注永雏塔菲谢谢喵
+Text A1
+Text A2
 
 1883-03-07 12:34:56 B(123123)
-TCG
+Text B
 
 1883-03-07 13:24:36 C(456456)
-TCG
+Text C
 
 1883-03-07 22:00:51 A<someone@example.com>
-塔菲怎么你了
+Text D
 '''.strip().splitlines()
 
 # 这里的 lines 也可以是文件对象或者以字符串或者 Path 对象表示的文件路径。
