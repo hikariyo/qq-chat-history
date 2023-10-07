@@ -4,7 +4,7 @@ from functools import lru_cache
 from io import TextIOBase
 from itertools import dropwhile
 from pathlib import Path
-from typing import Iterable, Iterator, Optional, TextIO, Union, cast
+from typing import Any, Iterable, Iterator, Optional, TextIO, Union, cast
 
 import ujson
 import yaml
@@ -79,25 +79,19 @@ class Body:
             path = Path(path)
         return cls.from_lines(path.read_text('utf8').splitlines())
 
-    def save(self, fp: TextIO, fmt: str, indent: int) -> None:
+    def save(self, fp: TextIO, fmt: str, **kwargs: Any) -> None:
         """Saves to a file, supporting `yaml` and `json` formats."""
         data = [m.__dict__ for m in self._messages]
 
         if fmt == 'json':
-            ujson.dump(
-                data, fp,
-                ensure_ascii=False,
-                indent=indent,
-            )
+            kwargs.setdefault('ensure_ascii', False)
+            ujson.dump(data, fp, **kwargs)
             return
 
         if fmt == 'yaml':
-            yaml.dump(
-                data, fp,
-                allow_unicode=True,
-                indent=indent,
-                Dumper=yaml.CDumper,
-            )
+            kwargs.setdefault('allow_unicode', True)
+            kwargs.setdefault('Dumper', yaml.CDumper)
+            yaml.dump(data, fp, **kwargs)
             return
 
         raise NameError(f'unknown format name {fmt}')

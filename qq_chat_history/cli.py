@@ -22,4 +22,4 @@ def run(input_file: Path, output_file: Path, output_format: str, indent: int) ->
         output_file = output_file.with_suffix(f'.{output_format}')
 
     with output_file.open('w', encoding='utf8') as fp:
-        parse(input_file).save(fp, output_format, indent)
+        parse(input_file).save(fp, output_format, indent=indent)
