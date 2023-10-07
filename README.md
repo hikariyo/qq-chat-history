@@ -60,11 +60,9 @@ for msg in qq_chat_history.parse(lines):
 
 ## Tips
 
-+ 在 `0.3.0+` 版本中，对于 `parse` 方法的实现进行了较大调整，它将返回一个 `Body` 类，原先是 `Iterable[Message]`。但这并**不会导致兼容性问题**，因为 `Body` 也是一个 `Iterable[Message]`。
++ 如果当作一个第三方库来用，例如 `find_xxx` 方法，可以从数据中查找指定 `id` 或 `name` 的消息；`save` 方法可以将数据以 `yaml` 或 `json` 格式保存到文件中，虽然这个工作一般都直接以 `CLI` 模式启动来完成。
 
-  不同的是，`Body` 类相对于原先单纯的生成器**提供更多功能**，例如`find_xxx` 方法，可以从数据中查找指定 `id` 或 `name` 的消息；`save` 方法可以将数据以 `yaml` 或 `json` 格式保存到文件中，虽然这个工作一般都直接以 `CLI` 模式启动来完成。
-
-+ 在 `0.3.0+` 版本中，你可以向 `parse` 中传入多样的类型。
++ 函数 `parse` 可以处理多样的类型。
 
   + `Iterable[str]`：迭代每行的可迭代对象，如 `list` 或 `tuple` 等。
   + `TextIOBase`：文本文件对象，如用 `open` 打开的文本文件，或者 `io.StringIO` 都属于文本文件对象。
